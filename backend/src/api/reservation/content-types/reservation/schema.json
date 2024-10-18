@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reservations",
+  "info": {
+    "singularName": "reservation",
+    "pluralName": "reservations",
+    "displayName": "Reservation"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "Email": {
+      "type": "email"
+    },
+    "CheckInDate": {
+      "type": "date"
+    },
+    "CheckOutDate": {
+      "type": "date"
+    },
+    "NumberOfGuests": {
+      "type": "integer"
+    },
+    "Notes": {
+      "type": "text"
+    }
+  }
+}

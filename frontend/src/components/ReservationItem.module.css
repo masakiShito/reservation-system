@@ -1,0 +1,29 @@
+.container {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.3s ease;
+}
+
+.container:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.name {
+    font-size: 1.5em;
+    margin-bottom: 8px;
+}
+
+.info {
+    margin: 4px 0;
+    font-size: 1em;
+    color: #555;
+}
+
+.notes {
+    margin-top: 8px;
+    font-style: italic;
+    color: #777;
+}
