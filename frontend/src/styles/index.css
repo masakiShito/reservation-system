@@ -1,0 +1,33 @@
+@import './variables.css';
+
+/* リセットスタイル */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 基本的なスタイル */
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+}
+
+/* 共通のレイアウトスタイル */
+.container {
+    padding: var(--padding-base);
+    margin: var(--margin-base) auto;
+    max-width: 1200px;
+}
+
+/* リンクのスタイル */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

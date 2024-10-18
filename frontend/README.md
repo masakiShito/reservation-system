@@ -1,46 +1,33 @@
-# Getting Started with Create React App
+# プロジェクトのフォルダ構成
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+申し訳ありません。マークダウンのフォルダ構成説明を正しく表示します。
 
-## Available Scripts
+markdown
+コードをコピーする
+# プロジェクトのフォルダ構成
 
-In the project directory, you can run:
+## フォルダ構成の詳細説明
 
-### `npm start`
+### `components/`
+- 各コンポーネントごとのフォルダです。コンポーネントごとに対応するCSSモジュールファイル（`*.module.css`）を用意して、スタイルを分離します。
+- 例: `ReservationItem.tsx` と `ReservationItem.module.css` は、予約アイテム表示用のコンポーネントとそのスタイルを定義します。
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### `pages/`
+- 各ページ単位のコンポーネントを管理するフォルダです。ページごとにスタイルをカスタマイズする場合は、ここに対応するCSSモジュールを追加します。
+- 例: `Reservations.tsx` は予約ページのコンポーネントで、`Reservations.module.css` にそのスタイルを定義します。
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### `styles/`
+- グローバルスタイルや共通スタイルを格納するフォルダです。プロジェクト全体で使用するスタイルをまとめ、再利用性を高めます。
+    - `index.css`: プロジェクト全体に適用されるリセットスタイルや基本的なレイアウト、タイポグラフィなどを定義します。
+    - `variables.css`: カラーパレット、フォント、ブレークポイントなどの変数を定義し、スタイルの一貫性と再利用性を確保します。
+    - `mixins.css`: よく使うスタイルの関数やレイアウトのヘルパーを定義します。
 
-### `npm test`
+### `services/`
+- API通信やユーティリティ関数を管理するフォルダです。バックエンドと通信するための設定やヘルパー関数を定義します。
+- 例: `api.ts` は、Axiosなどのライブラリを使用してAPI通信の設定を行います。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## フォルダ構成のポイント
+- **コンポーネント単位でのスタイル分離**: 各コンポーネントに対して対応するスタイルファイルを用意することで、スタイルがコンポーネントに依存していることが明確になります。
+- **グローバルスタイルの整理**: プロジェクト全体に適用するスタイルや変数を`styles/`フォルダにまとめ、メンテナンス性を向上させます。
+- **再利用性と一貫性**: 変数やミックスインを活用することで、スタイルの再利用性を高め、プロジェクト全体での一貫性を保ちます。
+- **API通信の切り出し**: API通信やユーティリティ関数を`services/`フォルダにまとめることで、コンポーネントからの分離を図り、保守性を高めます。
