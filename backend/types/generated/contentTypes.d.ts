@@ -6,6 +6,7 @@ export interface ApiReservationReservation extends Struct.CollectionTypeSchema {
     singularName: 'reservation';
     pluralName: 'reservations';
     displayName: 'Reservation';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -17,6 +18,10 @@ export interface ApiReservationReservation extends Struct.CollectionTypeSchema {
     CheckOutDate: Schema.Attribute.Date;
     NumberOfGuests: Schema.Attribute.Integer;
     Notes: Schema.Attribute.Text;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
@@ -511,6 +516,10 @@ export interface PluginUsersPermissionsUser
     role: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.role'
+    >;
+    reservations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reservation.reservation'
     >;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;

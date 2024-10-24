@@ -4,7 +4,8 @@
   "info": {
     "singularName": "reservation",
     "pluralName": "reservations",
-    "displayName": "Reservation"
+    "displayName": "Reservation",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -28,6 +29,12 @@
     },
     "Notes": {
       "type": "text"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "reservations"
     }
   }
 }

@@ -1,0 +1,24 @@
+/* src/styles/Reservations.module.css */
+.container {
+    padding: 20px;
+    background-color: #f0f4f7;
+}
+
+.error {
+    color: red;
+    font-size: 1em;
+    margin-bottom: 20px;
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+}
+
+.listItem {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
