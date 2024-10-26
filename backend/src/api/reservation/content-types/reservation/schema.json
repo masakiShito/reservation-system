@@ -12,29 +12,41 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "Name": {
-      "type": "string"
+    "number_of_people": {
+      "type": "integer",
+      "min": 1,
+      "required": true
     },
-    "Email": {
-      "type": "email"
-    },
-    "CheckInDate": {
-      "type": "date"
-    },
-    "CheckOutDate": {
-      "type": "date"
-    },
-    "NumberOfGuests": {
-      "type": "integer"
-    },
-    "Notes": {
+    "notes": {
       "type": "text"
     },
     "user": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "oneToMany",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "reservations"
+      "mappedBy": "reservation"
+    },
+    "item": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::item.item"
+    },
+    "schedules": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::schedule.schedule",
+      "mappedBy": "reservation"
+    },
+    "items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::item.item",
+      "mappedBy": "reservation"
+    },
+    "total_amount": {
+      "type": "decimal",
+      "default": 0,
+      "required": true
     }
   }
 }

@@ -1,5 +1,44 @@
 import type { Struct, Schema } from '@strapi/strapi';
 
+export interface ApiItemItem extends Struct.CollectionTypeSchema {
+  collectionName: 'items';
+  info: {
+    singularName: 'item';
+    pluralName: 'items';
+    displayName: 'Item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    description: Schema.Attribute.Text;
+    price: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
+    duration: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<1>;
+    capacity: Schema.Attribute.Integer & Schema.Attribute.Required;
+    active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    schedule: Schema.Attribute.Relation<'manyToOne', 'api::schedule.schedule'>;
+    reservation: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::reservation.reservation'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::item.item'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiReservationReservation extends Struct.CollectionTypeSchema {
   collectionName: 'reservations';
   info: {
@@ -12,16 +51,25 @@ export interface ApiReservationReservation extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    Name: Schema.Attribute.String;
-    Email: Schema.Attribute.Email;
-    CheckInDate: Schema.Attribute.Date;
-    CheckOutDate: Schema.Attribute.Date;
-    NumberOfGuests: Schema.Attribute.Integer;
-    Notes: Schema.Attribute.Text;
+    number_of_people: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
+    notes: Schema.Attribute.Text;
     user: Schema.Attribute.Relation<
-      'manyToOne',
+      'oneToMany',
       'plugin::users-permissions.user'
     >;
+    item: Schema.Attribute.Relation<'oneToOne', 'api::item.item'>;
+    schedules: Schema.Attribute.Relation<'oneToMany', 'api::schedule.schedule'>;
+    items: Schema.Attribute.Relation<'oneToMany', 'api::item.item'>;
+    total_amount: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
@@ -33,6 +81,51 @@ export interface ApiReservationReservation extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::reservation.reservation'
+    > &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiScheduleSchedule extends Struct.CollectionTypeSchema {
+  collectionName: 'schedules';
+  info: {
+    singularName: 'schedule';
+    pluralName: 'schedules';
+    displayName: 'Schedule';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    items: Schema.Attribute.Relation<'oneToMany', 'api::item.item'>;
+    date: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    start_time: Schema.Attribute.DateTime;
+    end_time: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    capacity: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    is_available: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    reservation: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::reservation.reservation'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::schedule.schedule'
     > &
       Schema.Attribute.Private;
   };
@@ -517,8 +610,8 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    reservations: Schema.Attribute.Relation<
-      'oneToMany',
+    reservation: Schema.Attribute.Relation<
+      'manyToOne',
       'api::reservation.reservation'
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -909,7 +1002,9 @@ export interface AdminTransferTokenPermission
 declare module '@strapi/strapi' {
   export module Public {
     export interface ContentTypeSchemas {
+      'api::item.item': ApiItemItem;
       'api::reservation.reservation': ApiReservationReservation;
+      'api::schedule.schedule': ApiScheduleSchedule;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::i18n.locale': PluginI18NLocale;
