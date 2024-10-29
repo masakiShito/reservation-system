@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router'; // next/routerのuseRouterをインポート
 import axios from 'axios';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 
@@ -8,91 +8,108 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
+    const router = useRouter(); // navigateではなくrouterと命名
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        setError('');
-
         try {
             const response = await axios.post('http://localhost:1337/api/auth/local', {
                 identifier,
                 password,
             });
-
-            const token = response.data.jwt;
-            const userId = response.data.user.id;
-            localStorage.setItem('jwt', token);
-            localStorage.setItem('userId', userId);
-
-            navigate('/reservations');
+            localStorage.setItem('jwt', response.data.jwt);
+            localStorage.setItem('userId', response.data.user.id);
+            router.push('/reservations'); // navigateの代わりにrouter.push
         } catch (err) {
-            setError('メールアドレスまたはパスワードが正しくありません');
+            setError('ログインに失敗しました');
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                {/* ロゴやブランド名を表示 */}
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
-                    <p className="mt-2 text-gray-600">予約システムへログイン</p>
-                </div>
-
-                {/* カード */}
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+            <div className="max-w-md w-full m-4">
                 <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        {/* メールアドレス入力 */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700" htmlFor="email">
-                                メールアドレス
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    id="email"
-                                    type="text"
-                                    value={identifier}
-                                    onChange={(e) => setIdentifier(e.target.value)}
-                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                           placeholder:text-gray-400"
-                                    placeholder="your@email.com"
+                    {/* ヘッダー部分 */}
+                    <div className="text-center mb-8">
+                        <div className="inline-block p-3 rounded-full bg-green-50 mb-4">
+                            <svg
+                                className="w-10 h-10 text-green-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 13l4 4L19 7"
                                 />
-                            </div>
+                            </svg>
                         </div>
+                        <h2 className="text-3xl font-bold text-gray-900">
+                            Welcome Back
+                        </h2>
+                        <p className="mt-2 text-sm text-gray-600">
+                            予約システムへログイン
+                        </p>
+                    </div>
 
-                        {/* パスワード入力 */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700" htmlFor="password">
-                                パスワード
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
+                    {/* フォーム部分 */}
+                    <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="space-y-5">
+                            {/* メールアドレス入力 */}
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                                    メールアドレス
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Mail className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        value={identifier}
+                                        onChange={(e) => setIdentifier(e.target.value)}
+                                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl
+                                            text-gray-900 placeholder-gray-400
+                                            focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        placeholder="your@email.com"
+                                        required
+                                    />
                                 </div>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                           placeholder:text-gray-400"
-                                    placeholder="••••••••"
-                                />
+                            </div>
+
+                            {/* パスワード入力 */}
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                                    パスワード
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Lock className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        id="password"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl
+                                            text-gray-900 placeholder-gray-400
+                                            focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        placeholder="••••••••"
+                                        required
+                                    />
+                                </div>
                             </div>
                         </div>
 
                         {/* エラーメッセージ */}
                         {error && (
-                            <div className="rounded-lg bg-red-50 p-4">
+                            <div className="p-4 rounded-xl bg-red-50 border border-red-100">
                                 <p className="text-sm text-red-600">{error}</p>
                             </div>
                         )}
@@ -101,46 +118,55 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-blue-600 text-white rounded-lg px-4 py-2
-                       hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                       disabled:opacity-50 disabled:cursor-not-allowed
-                       transition-colors duration-200
-                       flex items-center justify-center"
+                            className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-white
+                                bg-green-500 hover:bg-green-600
+                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+                                disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
-                                <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                            ) : null}
-                            {isLoading ? 'ログイン中...' : 'ログイン'}
+                                <span className="flex items-center justify-center">
+                                    <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                                    ログイン中...
+                                </span>
+                            ) : (
+                                'ログイン'
+                            )}
                         </button>
                     </form>
 
                     {/* 区切り線 */}
-                    <div className="relative mt-6">
+                    <div className="mt-6 relative">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-300" />
+                            <div className="w-full border-t border-gray-200" />
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white text-gray-500">アカウントをお持ちでない方</span>
+                            <span className="px-2 bg-white text-gray-500">
+                                アカウントをお持ちでない方
+                            </span>
                         </div>
                     </div>
 
-                    {/* 新規登録リンク */}
-                    <button
-                        onClick={() => navigate('/signup')}
-                        className="mt-6 w-full px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700
-                     hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                     transition-colors duration-200"
-                    >
-                        新規登録はこちら
-                    </button>
-                </div>
+                    {/* 追加リンク */}
+                    <div className="mt-6 space-y-4">
+                        <button
+                            onClick={() => router.push('/signup')} // navigateの代わりにrouter.push
+                            className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-gray-700
+                                border border-gray-300 hover:bg-gray-50
+                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                            新規登録はこちら
+                        </button>
 
-                {/* フッター */}
-                <p className="mt-6 text-center text-sm text-gray-600">
-                    <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                        パスワードをお忘れの方はこちら
-                    </a>
-                </p>
+                        <div className="text-center">
+                            <a
+                                href="/forgot-password"
+                                className="text-sm font-medium text-green-600 hover:text-green-500"
+                            >
+                                パスワードをお忘れの方はこちら
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
