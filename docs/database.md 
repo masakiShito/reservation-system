@@ -1,0 +1,161 @@
+# 予約システム データベース設計書
+
+## 1. 概要
+本データベースは予約システムのデータを管理するためのもので、Strapiの認証機能と予約管理機能を統合しています。
+
+## 2. コアテーブル一覧
+| テーブル名 | 説明 | 備考 |
+|------------|------|------|
+| up_users | ユーザー情報 | 顧客情報を管理 |
+| items | 商品情報 | 予約可能な商品・サービス |
+| reservations | 予約情報 | 予約の基本情報 |
+| schedules | スケジュール | 予約可能な時間枠 |
+
+## 3. テーブル定義
+
+### 3.1. up_users（ユーザー）テーブル
+| カラム名 | データ型 | NULL | 主キー | 説明 |
+|----------|----------|------|---------|------|
+| id | integer | NO | YES | ユーザーID |
+| username | string | NO | - | ユーザー名 |
+| email | string | NO | - | メールアドレス |
+| password | string | NO | - | パスワード（ハッシュ化） |
+| confirmed | boolean | YES | - | メール確認済みフラグ |
+| blocked | boolean | YES | - | アカウントブロックフラグ |
+| created_at | datetime | YES | - | 作成日時 |
+| updated_at | datetime | YES | - | 更新日時 |
+
+### 3.2. items（商品）テーブル
+| カラム名 | データ型 | NULL | 主キー | 説明 |
+|----------|----------|------|---------|------|
+| id | integer | NO | YES | 商品ID |
+| name | string | NO | - | 商品名 |
+| description | text | YES | - | 商品説明 |
+| price | decimal | NO | - | 価格 |
+| duration | integer | NO | - | 所要時間（分） |
+| capacity | integer | NO | - | 1回あたりの受け入れ可能人数 |
+| active | boolean | NO | - | 有効フラグ |
+| created_at | datetime | NO | - | 作成日時 |
+| updated_at | datetime | NO | - | 更新日時 |
+
+### 3.3. schedules（スケジュール）テーブル
+| カラム名 | データ型 | NULL | 主キー | 説明 |
+|----------|----------|------|---------|------|
+| id | integer | NO | YES | スケジュールID |
+| item_id | integer | NO | - | 商品ID（外部キー） |
+| date | date | NO | - | 予約日 |
+| start_time | time | NO | - | 開始時間 |
+| end_time | time | NO | - | 終了時間 |
+| capacity | integer | NO | - | 残り予約可能数 |
+| is_available | boolean | NO | - | 予約可能フラグ |
+| created_at | datetime | NO | - | 作成日時 |
+| updated_at | datetime | NO | - | 更新日時 |
+
+### 3.4. reservations（予約）テーブル
+| カラム名 | データ型 | NULL | 主キー | 説明 |
+|----------|----------|------|---------|------|
+| id | integer | NO | YES | 予約ID |
+| user_id | integer | NO | - | ユーザーID（外部キー） |
+| schedule_id | integer | NO | - | スケジュールID（外部キー） |
+| item_id | integer | NO | - | 商品ID（外部キー） |
+| status | string | NO | - | 予約状態 |
+| number_of_people | integer | NO | - | 予約人数 |
+| total_amount | decimal | NO | - | 合計金額 |
+| notes | text | YES | - | 備考 |
+| created_at | datetime | NO | - | 作成日時 |
+| updated_at | datetime | NO | - | 更新日時 |
+
+## 4. インデックス定義
+
+### 4.1. ユニークインデックス
+- up_users(email)
+- schedules(item_id, date, start_time)
+
+### 4.2. 検索用インデックス
+- reservations(user_id)
+- reservations(schedule_id)
+- reservations(status)
+- schedules(date)
+- schedules(is_available)
+
+## 5. ステータス定義
+
+### 5.1. reservations.status
+| 値 | 説明 |
+|-----|------|
+| pending | 予約待ち |
+| confirmed | 予約確定 |
+| cancelled | キャンセル済み |
+| completed | 利用完了 |
+
+## 6. リレーションシップ
+
+```mermaid
+erDiagram
+    up_users ||--o{ reservations : "makes"
+    items ||--o{ schedules : "has"
+    items ||--o{ reservations : "belongs_to"
+    schedules ||--o{ reservations : "has"
+
+    up_users {
+        integer id PK
+        string email UK
+        string username
+        string password
+    }
+
+    items {
+        integer id PK
+        string name
+        decimal price
+        integer duration
+        integer capacity
+    }
+
+    schedules {
+        integer id PK
+        integer item_id FK
+        date date
+        time start_time
+        time end_time
+        boolean is_available
+    }
+
+    reservations {
+        integer id PK
+        integer user_id FK
+        integer schedule_id FK
+        integer item_id FK
+        string status
+        decimal total_amount
+    }
+```
+
+## 7. 制約条件
+
+1. 予約作成時の制約
+   - スケジュールの予約可能数を超えない
+   - 同一時間帯の重複予約を禁止
+   - 過去日の予約を禁止
+
+2. スケジュール作成時の制約
+   - 終了時間は開始時間より後である
+   - 同一商品の同一時間帯の重複を禁止
+
+3. データ整合性
+   - ユーザー削除時の予約情報の扱い（外部キー制約）
+   - 商品削除時の予約情報の扱い（論理削除を推奨）
+
+## 8. 補足事項
+
+1. **認証関連**
+   - Strapiの認証システムを使用
+   - パスワードは自動的にハッシュ化
+
+2. **監査ログ**
+   - created_atとupdated_atで変更履歴を追跡
+   - 重要な操作はStrapiの監査ログ機能を使用
+
+3. **パフォーマンス考慮事項**
+   - 予約検索のインデックス最適化
+   - 期間指定検索の効率化

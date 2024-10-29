@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "schedules",
+  "info": {
+    "singularName": "schedule",
+    "pluralName": "schedules",
+    "displayName": "Schedule",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::item.item",
+      "mappedBy": "schedule"
+    },
+    "date": {
+      "type": "datetime",
+      "required": true
+    },
+    "start_time": {
+      "type": "datetime"
+    },
+    "end_time": {
+      "type": "datetime",
+      "required": true
+    },
+    "capacity": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "is_available": {
+      "type": "boolean",
+      "default": true
+    },
+    "reservation": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::reservation.reservation",
+      "inversedBy": "schedules"
+    }
+  }
+}

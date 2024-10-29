@@ -1,33 +1,22 @@
-// src/components/ReservationItem.tsx
+// components/ReservationItem.tsx
 import React from 'react';
-import styles from './ReservationItem.module.css';
+import Link from 'next/link';
 
 interface ReservationItemProps {
-    name: string;
-    email: string;
-    checkInDate: string;
-    checkOutDate: string;
-    numberOfGuests: number;
-    notes?: string;
+    reservation: any;
 }
 
-const ReservationItem: React.FC<ReservationItemProps> = ({
-                                                             name,
-                                                             email,
-                                                             checkInDate,
-                                                             checkOutDate,
-                                                             numberOfGuests,
-                                                             notes,
-                                                         }) => {
+const ReservationItem: React.FC<ReservationItemProps> = ({ reservation }) => {
     return (
-        <div className={styles.container}>
-            <h2 className={styles.name}>{name}</h2>
-            <p className={styles.info}><strong>Email:</strong> {email}</p>
-            <p className={styles.info}><strong>Check-in Date:</strong> {checkInDate}</p>
-            <p className={styles.info}><strong>Check-out Date:</strong> {checkOutDate}</p>
-            <p className={styles.info}><strong>Number of Guests:</strong> {numberOfGuests}</p>
-            {notes && <p className={styles.notes}><strong>Notes:</strong> {notes}</p>}
-        </div>
+        <li className="mb-4 bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+            <Link href={`/reservations/${reservation.id}`}>
+                <div className="p-4">
+                    <p className="text-lg font-semibold text-gray-800">日付: {reservation.created_at}</p>
+                    <p className="text-sm text-gray-600">人数: {reservation.number_of_people}</p>
+                    <p className="text-sm text-gray-600">合計金額: ¥{reservation.total_amount}</p>
+                </div>
+            </Link>
+        </li>
     );
 };
 
